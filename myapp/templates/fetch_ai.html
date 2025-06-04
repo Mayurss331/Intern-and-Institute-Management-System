@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Data Query</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Bootstrap JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/fetch_ai.css' %}">
+</head>
+<body>
+    {% include 'header.html' %}
+    <div class="main-container">
+    <h2>Fetch Data Using AI</h2>
+    
+    <button id="start-recording">🎙️ Start Recording</button>
+    <p id="query-text"></p>
+
+    <button id="fetch-data">Fetch Data</button>
+
+    <div id="user-info-container" class="table-content"></div>
+    <div id="performance-container" class="table-content"></div>
+    </div>
+
+    <script>
+        let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.interimResults = false;
+        recognition.continuous = false;
+
+        document.getElementById("start-recording").addEventListener("click", function() {
+            recognition.start();
+        });
+
+        recognition.onresult = function(event) {
+            let text = event.results[0][0].transcript;
+            document.getElementById("query-text").innerText = "Query: " + text;
+            sessionStorage.setItem("queryText", text);
+        };
+
+        document.getElementById("fetch-data").addEventListener("click", function() {
+            let queryText = sessionStorage.getItem("queryText");
+            if (!queryText) {
+                alert("Please record a query first!");
+                return;
+            }
+
+            $.post("{%url 'get_ai_data'%}", { query: queryText }, function(response) {
+                if (response.error) {
+                    $("#user-info-container").html("<p style='color:red;'>" + response.error + "</p>");
+                    $("#performance-container").html("");
+                    return;
+                }
+            
+                if (response.length === 0) {
+                    $("#user-info-container").html("<p>No results found.</p>");
+                    $("#performance-container").html("");
+                    return;
+                }
+            
+                let userFields = [];
+                let performanceFields = [];
+                let keys = Object.keys(response[0]); // Get column headers
+            
+                // Separate user and performance fields
+                keys.forEach(key => {
+                    if (key.startsWith("user__")) {
+                        userFields.push(key);
+                    } else {
+                        performanceFields.push(key);
+                    }
+                });
+            
+                // Ensure first and last name are included in the performance table
+                let nameFields = [ "user__last_name","user__first_name"];
+                nameFields.forEach(field => {
+                    if (!performanceFields.includes(field) && keys.includes(field)) {
+                        performanceFields.unshift(field); // Add to the beginning for visibility
+                    }
+                });
+            
+                // Generate User Info Table
+                let userTable = "<h3>User Information</h3><div class='table-container'><table><tr>";
+                userFields.forEach(key => userTable += `<th>${key.replace("user__", "")}</th>`);
+                userTable += "</tr>";
+            
+                response.forEach(row => {
+                    userTable += "<tr>";
+                    userFields.forEach(key => userTable += `<td>${row[key] || ""}</td>`);
+                    userTable += "</tr>";
+                });
+            
+                userTable += "</table></div>";
+                $("#user-info-container").html(userTable);
+            
+                // Generate Performance Table
+                let performanceTable = "<h3>User Performance</h3><div class='table-container'><table><tr>";
+                performanceFields.forEach(key => performanceTable += `<th>${key.replace("user__", "")}</th>`);
+                performanceTable += "</tr>";
+            
+                response.forEach(row => {
+                    performanceTable += "<tr>";
+                    performanceFields.forEach(key => performanceTable += `<td>${row[key] || ""}</td>`);
+                    performanceTable += "</tr>";
+                });
+            
+                performanceTable += "</table></div>";
+                $("#performance-container").html(performanceTable);
+            
+            }).fail(function() {
+                $("#user-info-container").html("<p style='color:red;'>Error fetching data.</p>");
+                $("#performance-container").html("");
+            });
+            
+        });
+    </script>
+
+</body>
+</html>

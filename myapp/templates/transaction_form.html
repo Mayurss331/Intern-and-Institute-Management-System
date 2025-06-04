@@ -1,0 +1,12 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/add_transaction.css' %}">
+{% block content %}
+<h2>{% if edit %}Edit{% else %}Add{% endif %} Transaction</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+<a href="{% url 'transaction_list' %}" class="btn btn-secondary">Back</a>
+{% endblock %}

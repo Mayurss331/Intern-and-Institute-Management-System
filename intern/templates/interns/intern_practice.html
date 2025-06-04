@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Practice</title>
+    <link rel="stylesheet" href="{% static "css/intern/practice.css" %}">
+</head>
+<body>
+    {% include 'intern_header.html' %}
+
+    <div class="container">
+        
+        <h2>Practice Resources</h2>
+        
+        <!-- Resources Section -->
+        <div class="section">
+            <h3>📚 Available Resources</h3>
+            {% if resources %}
+                <ul>
+                    {% for resource in resources %}
+                        <li>
+                            <strong>{{ resource.title }}</strong>
+                            <p>{{ resource.description }}</p>
+                            <a href="{{ resource.link }}" class="btn-primary" target="_blank">Access Resource</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No resources available.</p>
+            {% endif %}
+        </div>
+
+        <!-- Upcoming Practice Sessions -->
+        <div class="section">
+            <h3>📅 Upcoming Practice Sessions</h3>
+            {% if practice_sessions %}
+                <ul>
+                    {% for session in practice_sessions %}
+                    <li>
+                        <strong>{{ session.title }}</strong><br>
+                        <span>{{ session.description }}</span><br>
+                        <span>🕒 {{ session.date|date:"l, F j, g:i A" }}</span><br>
+                        <span>📍 {{ session.location }}</span><br>
+                        <a href="{{ session.join_link }}" class="btn-primary" target="_blank">
+                            Join Now
+                        </a>
+                    </li>                    
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No upcoming sessions.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

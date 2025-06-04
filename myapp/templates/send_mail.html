@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Sender</title>
+    <style>
+      .navbar {
+        display: flex;
+        justify-content: flex-end;
+        background: white;
+        padding: 15px 20px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .navbar a {
+        text-decoration: none;
+        color: black;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: "Poppins", sans-serif;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+        border-radius: 5px;
+      }
+
+      .navbar a:hover {
+        background-color: #ff6f00;
+        color: white;
+      }
+
+      .dropdown {
+        font-family: Arial, sans-serif;
+        margin-top: 50px;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+      }
+
+      .dropdown select {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        justify-content: center;
+        align-items: flex-start;
+        max-width: 400px;
+        margin: 10px auto;
+        padding: 20px 40px 20px 40px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        width: 100%;
+      }
+
+      .inputs label {
+        font-size: 18px;
+        font-family: Arial, sans-serif;
+        color: #333;
+      }
+
+      .inputs input,
+      .inputs select {
+        width: 100%;
+        padding: 12px;
+        height: 55px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 18px;
+        background-color: white;
+        box-sizing: border-box;
+      }
+
+      button {
+        background-color: #ff6f00;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+      }
+
+      button:hover {
+        background-color: rgb(24, 250, 54);
+      }
+
+      body {
+        background-color: rgb(179, 192, 249);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Email Sender Form -->
+    <form method="POST" action="{% url 'send-email'%}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <nav class="navbar">
+        <a href="{%url 'home'%}">Home</a>
+        <a href="{% url 'single-email' %}">Single Email</a>
+      </nav>
+
+      <!-- Inputs for Subject, Link, Time, and Date -->
+      <div class="inputs">
+        <label for="fileUpload">Choose a csv file:</label>
+        <input type="file" name="fileUpload" id="fileUpload" required />
+
+        <span class="error-message"></span>
+
+        <select name="batch_id" id="batch_id" required>
+          <option value="" selected disabled>Select Batch ID</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+        </select>
+
+        <span class="error-message"></span>
+
+        <select name="email_type" id="email_type" required>
+          <option value="" selected disabled>Select Mail Type</option>
+          <option value="pre_placement_talk">Pre Placement Talk Mail</option>
+          <option value="send_aptitude_assessment_mail">
+            Aptitude Assessment Mail
+          </option>
+          <option value="send_aptitude_assessment_reminder_mail">
+            Aptitude Assessment Reminder Mail
+          </option>
+          <option value="send_aptitude_assessment_feedback_mail">
+            Aptitude Assessment Feedback Mail
+          </option>
+          <option value="send_GD1_mail">GD-1 Mail</option>
+          <option value="send_GD1_reminder_mail">GD-1 Reminder Mail</option>
+          <option value="send_GD2_mail">GD-2 Mail</option>
+          <option value="send_GD2_reminder_mail">GD-2 Reminder Mail</option>
+          <option value="send_technical_assessment_register_mail">
+            Technical Assessment Register Mail
+          </option>
+          <option value="send_technical_assessment_register_reminder_mail">
+            Technical Assessment Register Mail Reminder
+          </option>
+          <option value="send_technical_assessment_mail">
+            Technical Assessment Mail
+          </option>
+          <option value="send_process_feedback_mail">
+            Process Feedback Mail
+          </option>
+          <option value="send_non_selection_mail">Non Selection Mail</option>
+          <option value="send_selection_mail">Selection Mail</option>
+          <option value="send_internship_offer_letter_mail">
+            Internship Offer Letter Mail
+          </option>
+        </select>
+
+        <span class="error-message"></span>
+
+        <label for="link">Link:</label>
+        <input type="text" name="link" id="link" />
+
+        <span class="error-message"></span>
+
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date" />
+
+        <span class="error-message"></span>
+
+        <label for="time">Time:</label>
+        <input type="time" name="time" id="time" />
+
+        <span class="error-message"></span>
+
+        <button type="submit" name="action" value="send">Send Email</button>
+      </div>
+    </form>
+    <script>
+      window.onload = function () {
+        let now = new Date();
+
+        // Ensure the date is in YYYY-MM-DD format (required by <input type="date">)
+        let dateString = now.toISOString().split("T")[0]; // Gets YYYY-MM-DD format
+        document.getElementById("date").value = dateString;
+
+        // Format time as HH:MM (24-hour format)
+        let hours = String(now.getHours()).padStart(2, "0");
+        let minutes = String(now.getMinutes()).padStart(2, "0");
+        let timeString = `${hours}:${minutes}`;
+        document.getElementById("time").value = timeString;
+      };
+      document
+        .getElementById("emailForm")
+        .addEventListener("submit", function (event) {
+          let isValid = true;
+          let errorMessages = document.querySelectorAll(".error-message");
+
+          errorMessages.forEach((msg) => (msg.innerText = "")); // Clear previous errors
+
+          function showError(input, message) {
+            let errorSpan = input.nextElementSibling;
+            if (errorSpan) {
+              errorSpan.innerText = message;
+            }
+          }
+
+          const fileInput = document.getElementById("fileUpload");
+          if (fileInput.files.length === 0) {
+            showError(fileInput, "Please upload a file.");
+            isValid = false;
+          }
+
+          const batchId = document.getElementById("batch_id");
+          if (batchId.value === "") {
+            showError(batchId, "Please select a Batch ID.");
+            isValid = false;
+          }
+
+          const emailType = document.getElementById("email_type");
+          if (emailType.value === "") {
+            showError(emailType, "Please select an Email Type.");
+            isValid = false;
+          }
+
+          const link = document.getElementById("link");
+          if (link.value.trim() === "") {
+            showError(link, "Please enter a valid link.");
+            isValid = false;
+          }
+
+          const date = document.getElementById("date");
+          if (date.value.trim() === "") {
+            showError(date, "Please select a date.");
+            isValid = false;
+          }
+
+          const time = document.getElementById("time");
+          if (time.value.trim() === "") {
+            showError(time, "Please select a time.");
+            isValid = false;
+          }
+
+          if (!isValid) {
+            event.preventDefault();
+          }
+        });
+    </script>
+  </body>
+</html>

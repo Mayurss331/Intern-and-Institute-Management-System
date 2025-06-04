@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Internship Offer Letter</title>
+  <style>
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    font-size: 14pt;
+    background-color: #fff;
+  }
+
+  .offer-letter {
+    width: 230mm;
+    height: 297mm;
+    box-sizing: border-box;
+    padding: 40px 60px;
+    border: 8px double #000;
+    margin: 40px auto;
+    position: relative;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .header-logo {
+    width: 35%;
+  }
+
+  .section-divider {
+    border-top: 1px solid #000;
+    margin: 20px 0;
+  }
+
+  .spaced {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .footer-images img {
+    width: 120px;
+    margin: 10px;
+  }
+
+  .footer {
+    font-size: 12pt;
+    margin-top: auto;
+  }
+
+  .ack-line {
+    margin-top: 40px;
+  }
+
+  .ack-line .label {
+    width: 100px;
+    display: inline-block;
+  }
+</style>
+
+</head>
+
+<body>
+    <div class="gap"style="height:40px;"></div>
+  <div class="offer-letter">
+    <!-- Logo -->
+    <div class="center">
+      <img src="images//logo.png" alt="Brand Logo" class="header-logo" />
+    </div>
+
+    <!-- Title -->
+    <div class="center spaced">
+      <div class="section-divider"></div>
+      <h1><strong>INTERNSHIP OFFER LETTER</strong></h1>
+      <div class="section-divider"></div>
+    </div>
+
+    <!-- Details -->
+    <div class="spaced">
+      <p>
+        <strong>Internship ID:</strong> {{internshipid}}
+        <span style="float: right"><strong>Date:</strong> {{changedate}}</span>
+      </p>
+    </div>
+
+    <p><strong>Dear {{candidatename}},</strong></p>
+
+    <p>
+      We are delighted to offer you the position of
+      <strong>{{internshiprole}}</strong> at
+      <strong>Elementis SoftTech</strong>. Based on your qualifications, skills,
+      and performance during the interview process, we are pleased to welcome
+      you to our team.
+    </p>
+
+    <p>{{rolepara}}</p>
+
+    <p>
+      Upon completion of the internship, you will receive a
+      <strong>Certificate of Completion</strong> from the company. Exceptional
+      performers may be considered for a
+      <strong>Pre-Placement Offer (PPO)</strong>, subject to availability.
+      Project details will be shared before the commencement of the internship.
+      Your appointment will be governed by the terms and conditions in Annexure
+      A.
+    </p>
+
+    <p>
+      <strong>Thank you,</strong><br />
+      <strong>Team Elementis SoftTech</strong>
+    </p>
+
+    <!-- Footer with Images -->
+    <div class="center footer-images">
+      <img src="images//msme_stamp.png" alt="MSME Stamp" />
+      <img src="images//logo_stamp.png" alt="Brand Stamp" />
+      <img src="images//logo.png" alt="Brand Logo Again" />
+    </div>
+    <div class="footer">
+      <p>
+        <code>support@elementissofttech.com</code>
+        <span style="float: right"><code>www.elementissofttech.com</code></span>
+      </p>
+    </div>
+    </div>
+    
+    <!-- Page Break -->
+    <div style="page-break-before: always"></div>
+  <div class="gap"style="height:40px;"></div>
+  <div class="offer-letter">
+
+    <!-- Annexure A -->
+    <div class="center spaced">
+      <h1><strong>Annexure A</strong></h1>
+      <div class="section-divider"></div>
+    </div>
+
+    <p>
+      During your internship with <strong>Elementis SoftTech</strong>, you shall
+      be governed by the following terms and conditions:
+    </p>
+
+    <ol>
+      <li>
+        You are selected as a <strong>{{internshiprole}}</strong>. Your
+        responsibilities include completing the training period and assigned
+        live projects.
+      </li>
+      <li>
+        Your date of joining is <strong>{{joindate}}</strong>, and the
+        internship duration is <strong>3 months</strong>.
+      </li>
+      <li>
+        All work produced during your internship will remain the intellectual
+        property of the company. You are not permitted to store, copy, share, or
+        distribute any materials to third parties.
+      </li>
+      <li>You must use your personal computer for the internship.</li>
+      <li>The internship will be conducted remotely.</li>
+      <li>
+        Professionalism in all interactions is expected. Misconduct may result
+        in termination.
+      </li>
+      <li>
+        Maintaining confidentiality is mandatory.
+        <strong>Elementis SoftTech</strong> follows a
+        <strong>zero-tolerance</strong> policy for data security breaches.
+      </li>
+      <li>
+        The company may offer a Pre-Placement Offer (PPO) at its discretion,
+        based on:
+        <ol type="a">
+          <li>
+            <strong>Vacancies:</strong> PPO will be provided if suitable
+            positions are available.
+          </li>
+          <li>
+            <strong>Performance:</strong> Consistently exceptional performance
+            throughout the internship.
+          </li>
+          <li>
+            <strong>Evaluation:</strong> PPO decisions are based on technical
+            skills, teamwork, deadlines, and contributions.
+          </li>
+        </ol>
+      </li>
+    </ol>
+
+    <p>
+      The Company reserves the right to withhold a PPO based on operational
+      requirements.
+    </p>
+  </div>
+    <!-- Page Break -->
+    <div style="page-break-before: always"></div>
+  <div class="gap"style="height:40px;"></div>
+  <div class="offer-letter" >
+    <!-- Acknowledgment -->
+    <div class="center spaced">
+      <h1><strong>Acknowledgment</strong></h1>
+    </div>
+
+    <p>
+      I, <strong>{{candidatename}}</strong>, have read, understood, and agree to
+      the terms and conditions mentioned in <strong>Annexure A</strong>.
+    </p>
+
+    <div class="ack-line">
+      <span class="label"><strong>Signature:</strong></span>
+      <span style="
+          border-bottom: 1px solid #000;
+          width: 300px;
+          display: inline-block;
+        "></span>
+    </div>
+    <div class="ack-line">
+      <span class="label"><strong>Name:</strong></span>
+      <span style="
+          border-bottom: 1px solid #000;
+          width: 300px;
+          display: inline-block;
+        "></span>
+    </div>
+    <div class="ack-line">
+      <span class="label"><strong>Date:</strong></span>
+      <span style="
+          border-bottom: 1px solid #000;
+          width: 300px;
+          display: inline-block;
+        "></span>
+    </div>
+  </div>
+</body>
+
+</html>

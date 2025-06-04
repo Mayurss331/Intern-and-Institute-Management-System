@@ -1,0 +1,62 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/intern/notifications.css' %}">
+<style>
+@media (max-width: 768px) {
+    .main-content ul {
+        width: 95%;
+    }
+
+    .main-content li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .main-content small {
+        margin-top: 5px;
+    }
+}
+
+</style>
+{% include "intern_header.html" %}
+    <div class="main-content">
+        <h2>Notifications</h2>
+        <ul id="notification-list">
+            {% for notification in notifications %}
+                <li class="notification-item {% if notification.is_read %}read{% else %}unread{% endif %}" 
+                    data-id="{{ notification.id }}">
+                    {{ notification.message }}
+                    <small>{{ notification.created_at|date:"M d, Y H:i" }}</small>
+                </li>
+            {% empty %}
+                <p>No notifications</p>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".notification-item").click(function () {
+                var notificationId = $(this).attr("data-id");
+        
+                // Generate the correct URL dynamically
+                var url = `{% url 'mark_notification_read' 0 %}`.replace("0", notificationId);
+        
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    success: function (data) {
+                        if (data.success) {
+                            $(`[data-id="${notificationId}"]`).removeClass("unread").addClass("read");
+                        }
+                    },
+                    error: function () {
+                        alert("Error marking notification as read!");
+                    }
+                });
+            });
+        });
+        
+    </script>
+    
+

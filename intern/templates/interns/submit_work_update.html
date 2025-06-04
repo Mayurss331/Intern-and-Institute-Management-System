@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Intern Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/intern/submit_work.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    {% include "intern_header.html" %}
+    <div class="container">
+    {% if already_submitted %}
+    <h2>Today's Work Update</h2>
+    <p><strong>Task Title:</strong> {{ today_update.task_title }}</p>
+    <p><strong>Task Description:</strong> {{ today_update.task_description }}</p>
+    <p><strong>Status:</strong> {{ today_update.get_task_status_display }}</p>
+    <p><strong>Report:</strong> {{ today_update.report }}</p>
+    <p><strong>What You Learned:</strong> {{ today_update.learnings }}</p>
+    <p><strong>Challenges:</strong> {{ today_update.challenges }}</p>
+    <p><strong>Suggestions:</strong> {{ today_update.suggestions }}</p>
+
+    <h3>Submitted Files:</h3>
+    <ul>
+        {% for submission in work_submissions %}
+            <li>
+                <a href="{{ submission.file.url }}" target="_blank">{{ submission.file.name }}</a>
+                <button onclick="deleteFile({{ submission.id }})">❌ Delete</button>
+            </li>
+        {% empty %}
+            <li>No files submitted.</li>
+        {% endfor %}
+    </ul>
+
+    <button onclick="showEditForm()">✏️ Edit</button>
+</div>
+    <div id="editForm" style="display:none;">
+        <h2>Edit Work Update</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ work_form.as_p }}
+
+            <label>Upload Additional Work Files:</label>
+            <input type="file" name="files" multiple>
+
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+{% else %}
+    <h2>Submit Daily Work Update</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ work_form.as_p }}
+
+        <label>Upload Your Work Files:</label>
+        <input type="file" name="files" multiple>
+
+        <button type="submit">Submit</button>
+    </form>
+{% endif %}
+
+<script>
+function showEditForm() {
+    document.getElementById("editForm").style.display = "block";
+}
+
+function deleteFile(submissionId) {
+    var url = "{% url 'delete_submission' 0 %}".replace("0", submissionId);
+    
+    $.ajax({
+        url: url,
+        method: "POST",
+        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+        success: function (data) {
+            alert("File deleted successfully!");
+            location.reload();
+        },
+        error: function () {
+            alert("Error deleting file.");
+        }
+    });
+}
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+

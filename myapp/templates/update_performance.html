@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Performance</title>
+    <link rel="stylesheet" href="{% static 'css/backbtn.css' %}">
+    <link rel="stylesheet" href="{% static 'css/performance.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- ✅ DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <!-- ✅ DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+
+
+</head>
+<body>
+    {% include 'header.html' %}
+
+                   <!-- Bootstrap Modal -->
+<div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="applicationModalLabel">Candidate Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Role:</strong> <span id="role"></span></p>
+                <p><strong>Full Name:</strong> <span id="fullName"></span></p>
+                <p><strong>Email:</strong> <span id="email"></span></p>
+                <p><strong>Phone:</strong> <span id="phone"></span></p>
+                <p><strong>Gender:</strong> <span id="gender"></span></p>
+                <p><strong>Date of Birth:</strong> <span id="dob"></span></p>
+                <p><strong>Domicile State:</strong> <span id="domicile"></span></p>
+                <p><strong>Current Location:</strong> <span id="currentLocation"></span></p>
+                <p><strong>Citizenship:</strong> <span id="citizenship"></span></p>
+                <p><strong>Education:</strong></p>
+                <ul>
+                    <li><strong>Postgraduate:</strong> <span id="postgrad"></span></li>
+                    <li><strong>Undergraduate:</strong> <span id="undergrad"></span></li>
+                    <li><strong>College Name:</strong> <span id="college"></span></li>
+                </ul>
+                <p><strong>Coding Languages:</strong> <span id="codingLanguages"></span></p>
+                <p><strong>Currently Working:</strong> <span id="currentlyWorking"></span></p>
+                <p><strong>Company Name:</strong> <span id="companyName"></span></p>
+                <p><strong>Designation:</strong> <span id="designation"></span></p>
+                <p><strong>Open to Relocate:</strong> <span id="openToRelocate"></span></p>
+                <p><strong>Resume:</strong> <a id="resumeLink" href="#" target="_blank">View</a></p>
+                <p><strong>Photo:</strong> <a id="passportPhoto" href="#" target="_blank">View</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <a class="back-button" href="{% url 'home' %}"></a>
+    <div class="container mt-4">
+        <h2>User Performance</h2>
+        
+        <!-- 🔹 Batch ID Filter (Input Field) -->
+        <div class="mb-3">
+            <label for="batchFilter" class="form-label"><strong>Filter by Batch ID:</strong></label>
+            <input type="text" id="batchFilter" class="form-control" placeholder="Enter Batch ID and press Enter">
+        </div>
+        <button class="btn btn-primary" id="batchFilterBtn">Filter</button>
+        <!-- 🔹 Filters -->
+        <div class="Filters">        
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="gd1AttendFilter">
+                <label class="form-check-label" for="gd1AttendFilter"><strong>Show only GD1 attendees</strong></label>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input2" type="checkbox" id="gd2AttendFilter">
+                <label class="form-check-label" for="gd2AttendFilter"><strong>Show only GD2 attendees</strong></label>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input2" type="checkbox" id="feespaid">
+                <label class="form-check-label" for="feespaid"><strong>Fees paid</strong></label>
+            </div>
+        </div>
+
+
+        <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <div class="table-container">
+                <!-- Add this button above the table -->
+            <button id="downloadCSV" class="btn btn-success mb-3">Download CSV</button>
+            <table id="performanceTable" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Batch ID</th>
+                        <th>Aptitude Score</th>
+                        <th>GD-1 Attend</th>
+                        <th>GD-1 Marks</th>
+                        <th>GD-2 Attend</th>
+                        <th>GD-2 Marks</th>
+                        <th>Fees Paid</th>
+                        <th>Technical Marks</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="performanceTableBody">
+                    {% for perf in users %}
+                    <tr>
+                        <td>{{ perf.user.id }}</td>
+                        <td>{{ perf.user.first_name }} {{ perf.user.last_name }}</td>
+                        <td>{{ perf.user.email }}</td>
+                        <td contenteditable="true" class="editable" data-user="{{ perf.user.id }}" data-field="batch_id">{{ perf.batch_id }}</td>
+                        <td contenteditable="true" class="editable" data-user="{{ perf.user.id }}" data-field="aptitude_score">{{ perf.aptitude_score }}</td>
+
+                        <!-- ✅ Checkbox sorting fix -->
+                        <td data-sort="{% if perf.gd1_attendance %}1{% else %}0{% endif %}">
+                            <input type="checkbox" class="editable-checkbox" data-user="{{ perf.user.id }}" data-field="gd1_attendance" {% if perf.gd1_attendance %}checked{% endif %}>
+                        </td>
+
+                        <td contenteditable="true" class="editable" data-user="{{ perf.user.id }}" data-field="gd1_marks">{{ perf.gd1_marks }}</td>
+
+                        <td data-sort="{% if perf.gd2_attendance %}1{% else %}0{% endif %}">
+                            <input type="checkbox" class="editable-checkbox" data-user="{{ perf.user.id }}" data-field="gd2_attendance" {% if perf.gd2_attendance %}checked{% endif %}>
+                        </td>
+
+                        <td contenteditable="true" class="editable" data-user="{{ perf.user.id }}" data-field="gd2_marks">{{ perf.gd2_marks }}</td>
+
+                        <td data-sort="{% if perf.fees_paid %}1{% else %}0{% endif %}">
+                            <input type="checkbox" class="editable-checkbox" data-user="{{ perf.user.id }}" data-field="fees_paid" {% if perf.fees_paid %}checked{% endif %}>
+                        </td>
+
+                        <td contenteditable="true" class="editable" data-user="{{ perf.user.id }}" data-field="technical_marks">{{ perf.technical_marks }}</td>
+                        <td>
+                            <button class="view-btn" onclick="showDetails({{ perf.user.id }})">View</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <script>
+        document.getElementById("downloadCSV").addEventListener("click", function () {
+            let table = document.getElementById("performanceTable");
+            let rows = table.getElementsByTagName("tr");
+            let emails = [];
+        
+            // Collect emails from the table (assuming email is in the 4th column)
+            for (let i = 1; i < rows.length; i++) {
+                let emailCell = rows[i].getElementsByTagName("td")[2];  // Adjust column index if needed
+                if (emailCell) {
+                    emails.push(emailCell.innerText.trim());
+                }
+            }
+        
+            // Fetch full application data based on collected emails
+            fetch(`{%url 'get_application_data'%}?emails[]=${emails.join("&emails[]=")}`)
+                .then(response => response.json())
+                .then(data => {
+                    let csvContent = [];
+        
+                    // Extract headers dynamically from the first object
+                    if (data.length > 0) {
+                        let headers = Object.keys(data[0]);
+                        csvContent.push(headers.join(",")); // Add header row
+                    }
+        
+                    // Extract row data
+                    data.forEach(row => {
+                        let rowData = [];
+                        for (let key in row) {
+                            rowData.push(row[key]); // Get each field value
+                        }
+                        csvContent.push(rowData.join(","));
+                    });
+        
+                    // Convert to CSV format
+                    let csvFile = new Blob([csvContent.join("\n")], { type: "text/csv" });
+        
+                    // Create download link
+                    let downloadLink = document.createElement("a");
+                    downloadLink.href = URL.createObjectURL(csvFile);
+                    downloadLink.download = "user_performance.csv";
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        });
+        
+    </script>
+
+
+    <script>
+        function getCSRFToken() {
+            let tokenInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+            return tokenInput ? tokenInput.value : "";
+        }
+        $(document).ready(function(){
+            
+
+            function updateUserPerformance(userId, field, value, previousValue) {
+                let csrfToken = getCSRFToken();
+
+                if (!csrfToken) {
+                    console.error("CSRF token missing!");
+                    return;
+                }
+
+                // Prevent unnecessary updates if value hasn't changed
+                if (value === previousValue) {
+                    console.log(`No change in ${field}, skipping update.`);
+                    return;
+                }
+
+                $.ajax({
+                    url: `/elementishead/update-performance/${userId}/`,
+                    type: "POST",
+                    data: {
+                        field: field,
+                        value: value,
+                        csrfmiddlewaretoken: csrfToken
+                    },
+                    success: function(response){
+                        console.log(`Updated ${field} for user ${userId}`);
+                    },
+                    error: function(xhr){
+                        console.log("Error:", xhr.responseText);
+                    }
+                });
+            }
+
+            $(".editable").each(function(){
+                $(this).data("prevValue", $(this).text().trim());  // Store initial value
+            });
+
+            // Trigger update on Enter key
+            $(".editable").on("keydown", function(event){
+                if (event.keyCode === 13) {  // Enter key pressed
+                    event.preventDefault();  // Prevent new line (for multi-line fields)
+                    $(this).blur();  // Remove focus to trigger update
+                }
+            });
+
+            // Trigger update on blur
+            $(".editable").on("blur", function(){
+                let userId = $(this).data("user");
+                let field = $(this).data("field");
+                let value = $(this).text().trim();
+                let prevValue = $(this).data("prevValue");  // Get previous value
+
+                updateUserPerformance(userId, field, value, prevValue);
+                $(this).data("prevValue", value);  // Update stored value
+            });
+
+            // Checkbox update on change
+            $(".editable-checkbox").each(function(){
+                $(this).data("prevChecked", $(this).is(":checked"));  // Store initial state
+            });
+
+            $(".editable-checkbox").on("change", function(){
+                let userId = $(this).data("user");
+                let field = $(this).data("field");
+                let value = $(this).is(":checked");
+                let prevChecked = $(this).data("prevChecked");
+
+                if (value !== prevChecked) {
+                    updateUserPerformance(userId, field, value, prevChecked);
+                    $(this).data("prevChecked", value);  // Update stored state
+                }
+            });
+
+            
+        });
+        $(document).ready(function(){
+            $("#batchFilter").on("keydown", function(event){
+                if (event.keyCode === 13) {  // Enter key pressed
+                    event.preventDefault();  // Prevent default form submission
+
+                    let selectedBatch = $("#batchFilter").val().trim();  // Get input value
+
+                    if (selectedBatch === "") {
+                        console.log("Batch ID is empty, redirecting to all users.");
+                        window.location.href = "/performance/";  // Redirect to main page
+                        return;
+                    }
+
+                    // Redirect to the new URL with batch_id as a query parameter
+                    window.location.href = `/elementishead/performance/?batch_id=${encodeURIComponent(selectedBatch)}`;
+                }
+            });
+        });
+        
+        
+    </script>
+    <script>
+        $(document).ready(function(){
+            // ✅ Initialize DataTable for sorting
+            $("#performanceTable").DataTable({
+                "paging": true,   // Enable pagination
+                "ordering": true, // Enable sorting
+                "info": true,     // Show table info
+                "searching": true // Enable search filter
+            });
+
+            // ✅ Batch ID Filter Redirection
+            $("#batchFilter").on("keydown", function(event){
+                if (event.keyCode === 13) {  // Enter key pressed
+                    event.preventDefault();
+                    let selectedBatch = $("#batchFilter").val().trim();
+                    window.location.href = selectedBatch ? `/elementishead/performance/?batch_id=${encodeURIComponent(selectedBatch)}` : "/performance/";
+                }
+            });
+            document.getElementById("batchFilterBtn").addEventListener("click", function () {
+                let selectedBatch = document.getElementById("batchFilter").value.trim();
+                window.location.href = selectedBatch 
+                    ? `/elementishead/performance/?batch_id=${encodeURIComponent(selectedBatch)}` 
+                    : "/elementishead/performance/";
+            });
+        
+        });
+        $(document).ready(function () {
+            let table = $("#performanceTable").DataTable();
+        
+            $("#gd1AttendFilter").on("change", function () {
+                let isChecked = $(this).is(":checked");
+        
+                // Apply custom filtering
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    let gd1Checkbox = $(table.row(dataIndex).node()).find('td:eq(5) input[type="checkbox"]'); // Target column index 5
+                    return isChecked ? gd1Checkbox.prop("checked") : true;
+                });
+        
+                table.draw();
+            });
+        });
+        $(document).ready(function () {
+            let table = $("#performanceTable").DataTable();
+        
+            $("#gd2AttendFilter").on("change", function () {
+                let isChecked = $(this).is(":checked");
+        
+                // Apply custom filtering
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    let gd1Checkbox = $(table.row(dataIndex).node()).find('td:eq(7) input[type="checkbox"]'); // Target column index 5
+                    return isChecked ? gd1Checkbox.prop("checked") : true;
+                });
+        
+                table.draw();
+            });
+        });
+        $(document).ready(function () {
+            let table = $("#performanceTable").DataTable();
+        
+            $("#feespaid").on("change", function () {
+                let isChecked = $(this).is(":checked");
+        
+                // Apply custom filtering
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    let gd1Checkbox = $(table.row(dataIndex).node()).find('td:eq(9) input[type="checkbox"]'); // Target column index 5
+                    return isChecked ? gd1Checkbox.prop("checked") : true;
+                });
+        
+                table.draw();
+            });
+        });
+        
+
+
+        function showDetails(userId) {
+            fetch(`/elementishead/get-details/${userId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("role").innerText = data.role;
+                        document.getElementById("fullName").innerText = data.first_name + " " + data.last_name;
+                        document.getElementById("email").innerText = data.email;
+                        document.getElementById("phone").innerText = data.phone;
+                        document.getElementById("gender").innerText = data.gender;
+                        document.getElementById("dob").innerText = data.date_of_birth;
+                        document.getElementById("domicile").innerText = data.domicile_state;
+                        document.getElementById("currentLocation").innerText = data.current_location;
+                        document.getElementById("citizenship").innerText = data.citizenship;
+                        document.getElementById("postgrad").innerText = data.postgraduate_degree ? data.postgraduate_degree + " (" + data.postgraduate_stream + ", " + data.postgraduate_passing_year + ")" : "N/A";
+                        document.getElementById("undergrad").innerText = data.undergraduate_degree + " (" + data.undergraduate_stream + ", " + data.undergraduate_passing_year + ")";
+                        document.getElementById("college").innerText = data.college_name;
+                        document.getElementById("codingLanguages").innerText = data.coding_languages;
+                        document.getElementById("currentlyWorking").innerText = data.currently_working ? "Yes" : "No";
+                        document.getElementById("companyName").innerText = data.company_name || "N/A";
+                        document.getElementById("designation").innerText = data.designation || "N/A";
+                        document.getElementById("openToRelocate").innerText = data.open_to_relocate ? "Yes" : "No";
+                        document.getElementById("resumeLink").href = data.resume_url;
+                        document.getElementById("resumeLink").innerText = "View";
+                        document.getElementById("passportPhoto").href =data.passport_photo_url;
+                        document.getElementById("passportPhoto").innerText = "View";
+
+                        new bootstrap.Modal(document.getElementById("applicationModal")).show();
+                    } else {
+                        alert("No details found for this candidate.");
+                    }
+                })
+                .catch(error => console.error("Error fetching application data:", error));
+        }
+        
+        
+    </script> 
+
+
+
+    {% include 'footer.html' %}
+
+</body>
+</html>

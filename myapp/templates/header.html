@@ -1,0 +1,63 @@
+{% load static %} 
+<link rel="stylesheet" href="{% static 'css/header.css' %}">
+<header>
+    <h1>Elementis SoftTech</h1>
+    <p>Overview of applications and user performance</p>
+    <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+
+</header>
+
+<nav>
+    <a href="{% url 'home' %}"><h1>Elementis Softtech</h1></a>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <ul id="nav-links">
+        <li class="menu-item" onclick="toggleDropdown('internDropdown')">
+            <a href="javascript:void(0);">Intern</a>
+            <ul class="dropdown" id="internDropdown">
+              <li><a href="{% url 'interns_performance' %}">Interns Performance</a></li>
+              <li><a href="{% url 'create_intern' %}">Create Intern</a></li>
+              <li><a href="{% url 'manage_schedule' %}">Manage Schedule</a></li>
+              <li><a href="{% url 'internship' %}">Internship Letter</a></li>
+            </ul>
+        </li>
+        <li class="menu-item" onclick="toggleDropdown('performanceDropdown')">
+            <a href="javascript:void(0);">Performance</a>
+            <ul class="dropdown" id="performanceDropdown">
+                <li><a href="{% url 'user_performance' %}">Performance</a></li>
+                <li><a href="{% url 'upload_performance' %}">Upload Performance</a></li>
+            </ul>
+        </li>
+
+        <li><a href="{% url 'send-email' %}">Mail Sender</a></li>
+
+        <li class="menu-item" onclick="toggleDropdown('applicationDropdown')">
+            <a href="javascript:void(0);">Applications</a>
+            <ul class="dropdown" id="applicationDropdown">  
+                <li><a href="{% url 'sorted_applications' %}">Sorted Applications</a></li>
+                <li><a href="{% url 'search_applications' %}">Search Applications</a></li>
+                <li><a href="{% url 'get_ai_data' %}">Fetch Through AI</a></li>
+                <li><a href="{% url 'upload_excel' %}">Upload Data</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    function toggleMenu() {
+        document.getElementById('nav-links').classList.toggle('active');
+    }
+
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        const isVisible = dropdown.style.display === 'block';
+        document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+        dropdown.style.display = isVisible ? 'none' : 'block';
+    }
+    
+    // Close dropdowns on click outside
+    window.addEventListener('click', function(e) {
+        if (!e.target.closest('.menu-item')) {
+        document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+        }
+    });
+</script>

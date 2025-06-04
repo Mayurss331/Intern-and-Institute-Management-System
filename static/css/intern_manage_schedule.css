@@ -1,0 +1,152 @@
+.container{
+    box-shadow: 10px 10px 5px #4450ddb0;
+    width: 98vw;
+    background: #e2e2e2;
+    justify-self: center;
+    padding: 50px;
+    border-radius: 8px;
+    margin: 10px
+}
+.management-section{
+    border-bottom:2px solid black;
+    padding:20px;
+}
+.btn-edit, .btn-delete {
+    margin-top: 10px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+    color: black;
+    margin-right: 10px;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Modal Overlay */
+.modal {
+display: flex;
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: rgba(0, 0, 0, 0.6);
+align-items: center;
+justify-content: center;
+z-index: 9999;
+padding: 20px;
+backdrop-filter: blur(3px); /* Subtle blur effect */
+}
+
+/* Modal Content Box */
+.modal-content {
+background: #fff;
+padding: 30px 25px;
+border-radius: 12px;
+width: 100%;
+max-width: 400px;
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+position: relative;
+animation: fadeIn 0.3s ease-out;
+}
+.modal-content form{
+    padding: 10px;
+}
+.modal-content input,.modal-content textarea{
+width:90%;
+padding:5px;
+margin:10px;
+border-radius: 5px;
+border: 1px solid black;
+}
+
+/* Close Button */
+.close-btn {
+position: absolute;
+top: 15px;
+right: 20px;
+font-size: 26px;
+color: #999;
+cursor: pointer;
+transition: color 0.2s;
+}
+
+.close-btn:hover {
+color: #333;
+}
+
+/* Update Button */
+.btn-update {
+display: inline-block;
+margin-top: 20px;
+background: linear-gradient(135deg, #28a745, #218838);
+color: #fff;
+padding: 10px 20px;
+border: none;
+border-radius: 8px;
+font-weight: bold;
+cursor: pointer;
+transition: background 0.3s ease;
+font-size: 16px;
+}
+
+.btn-update:hover {
+background: linear-gradient(135deg, #218838, #1e7e34);
+}
+
+/* Animation for Modal */
+@keyframes fadeIn {
+from {
+    opacity: 0;
+    transform: scale(0.95);
+}
+to {
+    opacity: 1;
+    transform: scale(1);
+}
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+.modal-content {
+    padding: 20px 15px;
+}
+.btn-update {
+    width: 100%;
+    text-align: center;
+}
+}
+
+.fl-mw{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 10px;
+    justify-content: flex-start;
+}
+.item-card{
+    width: 340px;
+    background: white;
+    padding: 10px;
+    box-shadow: 2px 2px 2px black;
+    border-radius: 5px;
+    text-wrap: wrap;
+    list-style: none;
+    margin:10px;
+    display:flex;
+    flex-direction:column;
+}
+#announcement-list button{
+    align-self: end;
+    position: absolute;
+}
+.long-card{
+    width: 75%;
+    justify-self: center;
+}

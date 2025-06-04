@@ -1,0 +1,14 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% include 'header.html' %}
+{% block content %}
+<h2>Are you sure you want to delete this record?</h2>
+<p><strong>Candidate:</strong> {{ performance.candidate.username }}</p>
+<p><strong>Date:</strong> {{ performance.date }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{% url 'intern_performance_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

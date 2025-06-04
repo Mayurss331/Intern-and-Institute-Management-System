@@ -1,0 +1,14 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/intern_performance.css' %}">
+
+{% include 'header.html' %}
+{% block content %}
+<h2>Add Performance Record</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+<a href="{% url 'intern_performance_list' %}" class="btn btn-secondary">Back</a>
+{% endblock %}

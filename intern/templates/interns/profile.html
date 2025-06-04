@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Intern Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/intern/profile.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    {% include "intern_header.html" %}
+
+    <div class="profile-container">
+        <h2>My Profile</h2>
+
+        <!-- Uneditable Profile View -->
+        <div id="profile-view">
+            <div class="profile-picture">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
+                {% else %}
+                    <img src="/media/default-profile.png" alt="Default Profile">
+                {% endif %}
+            </div>
+
+            <p><strong>First Name:</strong> {{ user.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+            <p><strong>College Name:</strong> {{ user.college_name }}</p>
+            <p><strong>Degree:</strong> {{ user.degree }}</p>
+            <p><strong>Passing Year:</strong> {{ user.passing_year }}</p>
+
+            <button id="edit-profile-btn">Edit Profile</button>
+            <button id="change-password-btn">Change Password</button>
+        </div>
+
+        <!-- Edit Profile Form (Hidden by Default) -->
+        <form id="edit-profile-form" method="POST" enctype="multipart/form-data" style="display: none;">
+            {% csrf_token %}
+            
+            <div class="profile-picture">
+                <label>Profile Picture:</label>
+                <input type="file" name="profile_picture">
+            </div>
+
+            <label>First Name:</label>
+            <input type="text" name="first_name" value="{{ user.first_name }}" required>
+
+            <label>Last Name:</label>
+            <input type="text" name="last_name" value="{{ user.last_name }}" required>
+
+            <label>Email:</label>
+            <input type="email" name="email" value="{{ user.email }}" readonly>
+
+            <label>Phone Number:</label>
+            <input type="text" name="phone_number" value="{{ user.phone_number }}" required>
+
+            <label>College Name:</label>
+            <input type="text" name="college_name" value="{{ user.college_name }}" required>
+
+            <label>Degree:</label>
+            <input type="text" name="degree" value="{{ user.degree }}" required>
+
+            <label>Passing Year:</label>
+            <input type="number" name="passing_year" value="{{ user.passing_year }}" required>
+
+            <button type="submit">Save Changes</button>
+            <button type="button" id="cancel-edit-btn">Cancel</button>
+        </form>
+
+        <!-- Change Password Form (Hidden by Default) -->
+        <form id="change-password-form" method="POST" action="{% url 'change_password' %}" style="display: none;">
+            {% csrf_token %}
+            <label>Old Password:</label>
+            <input type="password" name="old_password" required>
+
+            <label>New Password:</label>
+            <input type="password" name="new_password1" required>
+
+            <label>Confirm New Password:</label>
+            <input type="password" name="new_password2" required>
+
+            <button type="submit">Change Password</button>
+            <button type="button" id="cancel-password-btn">Cancel</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Show Edit Profile Form
+            $("#edit-profile-btn").click(function() {
+                $("#profile-view").hide();
+                $("#edit-profile-form").show();
+            });
+
+            // Show Change Password Form
+            $("#change-password-btn").click(function() {
+                $("#profile-view").hide();
+                $("#change-password-form").show();
+            });
+
+            // Cancel Edit Profile
+            $("#cancel-edit-btn").click(function() {
+                $("#edit-profile-form").hide();
+                $("#profile-view").show();
+            });
+
+            // Cancel Change Password
+            $("#cancel-password-btn").click(function() {
+                $("#change-password-form").hide();
+                $("#profile-view").show();
+            });
+        });
+    </script>
+
+</body>
+</html>

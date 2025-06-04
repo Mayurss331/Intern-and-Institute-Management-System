@@ -1,0 +1,346 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/intern_performance.css' %}">
+{% include 'header.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <div class="left-section">
+
+        <!-- Add Announcement Section -->
+        <div class="container">
+            <h3>📢 Announcements</h3>
+            <button class="btn" id="open-announcement-form-btn">➕ Add Announcement</button>
+
+            <div id="announcement-popup" class="popup">
+                <div class="popup-content">
+                    <span class="close-btn" id="close-announcement-form-btn">&times;</span>
+                    <h3>Add New Announcement</h3>
+
+                    <form id="announcement-form">
+                        <label for="announcement-title">Title:</label>
+                        <input type="text" id="announcement-title" name="announcement_title" required>
+
+                        <label for="announcement-message">Message:</label>
+                        <textarea id="announcement-message" name="announcement_message" required></textarea>
+
+                        <label for="announcement-category">Category:</label>
+                        <select id="announcement-category" name="announcement_category">
+                            <option value="general">General</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="deadline">Deadline</option>
+                            <option value="event">Event</option>
+                            <option value="update">Update</option>
+                        </select>
+
+                        <label for="announcement-link">Link (Optional):</label>
+                        <input type="url" id="announcement-link" name="announcement_link">
+
+                        <label>
+                            Mark as Important
+                            <input type="checkbox" id="announcement-important" name="announcement_is_important">
+                        </label>
+
+                        <button type="submit" class="btn">Submit Announcement</button>
+                    </form>
+
+                    <p id="announcement-response-message"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Meeting Section -->
+        <div class="container">
+            <h2>Add Upcoming Meeting</h2>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <form id="meeting-form">
+                {% csrf_token %}
+                <label>Meeting Title:</label>
+                <input type="text" id="meeting-title" name="meeting_title" required>
+
+                <label>Description:</label>
+                <textarea id="meeting-description" name="meeting_description"></textarea>
+
+                <label>Date & Time:</label>
+                <input type="datetime-local" id="meeting-date" name="meeting_date" required>
+
+                <label>Location (or Link):</label>
+                <input type="text" id="meeting-location" name="meeting_location">
+
+                <button type="submit">Add Meeting</button>
+            </form>
+        </div>
+
+        <!-- Add Practice Session Section -->
+        <div class="container">
+            <h2>{% if session %}Edit{% else %}Add{% endif %} Practice Session</h2>
+
+            <form id="practice-session-form">
+                {% csrf_token %}
+                <input type="hidden" id="session_id" value="{{ session.id|default:'' }}">
+
+                <label>Session Title</label>
+                <input type="text" id="session-title" value="{{ session.title|default:'' }}">
+
+                <label>Description</label>
+                <textarea id="session-description">{{ session.description|default:'' }}</textarea>
+
+                <label>Date & Time</label>
+                <input type="datetime-local" id="session-date" value="{{ session.date|date:'Y-m-d\\TH:i'|default:'' }}">
+
+                <label>Location</label>
+                <input type="text" id="session-location" value="{{ session.location|default:'' }}">
+
+                <label>Meeting Link</label>
+                <input type="url" id="session-link" value="{{ session.meeting_link|default:'' }}">
+
+                <button type="button" onclick="submitSession()">Save Session</button>
+            </form>
+            <p id="session-response-message"></p>
+        </div>
+
+    </div>
+
+    <!-- Floating Notify Button -->
+    <button class="floating-btn" onclick="openNotificationPopup()">🔔 Notify Intern</button>
+
+    <!-- Notification Modal -->
+    <div id="notification-popup" class="popup-container" >
+        <div class="popup-content" onclick="event.stopPropagation();">
+            <span class="close-btn" onclick="closeNotificationPopup()">&times;</span>
+            <h3>Send Notification</h3>
+
+            <label for="notify-intern">Select Intern:</label>
+            <select id="notify-intern">
+                {% for intern in interns %}
+                    <option value="{{ intern.id }}">{{ intern.name }} ({{ intern.email }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="notify-message">Message:</label>
+            <textarea id="notify-message" rows="3" placeholder="Enter your message..."></textarea>
+
+            <button onclick="sendNotification()" class="btn-send">Send Notification</button>
+            <p id="notification-status"></p>
+        </div>
+    </div>
+
+    <!-- Intern Submissions Section -->
+    <div class="submissions-container">
+        <h2>Today's Interns' Submissions</h2>
+        {% if today_submissions %}
+            <ul class="submissions-list">
+                {% for update in today_submissions %}
+                    <li class="submission-card">
+                        <h3>{{ update.intern.name }}</h3>
+                        <p><strong>Date:</strong> {{ update.date }}</p>
+                        <p><strong>Task:</strong> {{ update.task_title }}</p>
+                        <details>
+                            <summary>View More</summary>
+                            <p><strong>Description:</strong> {{ update.task_description }}</p>
+                            <p><strong>Report:</strong> {{ update.report }}</p>
+                            <p><strong>Learnings:</strong> {{ update.learnings }}</p>
+                            <p><strong>Challenges:</strong> {{ update.challenges }}</p>
+                            <p><strong>Suggestions:</strong> {{ update.suggestions }}</p>
+                        </details>
+
+                        {% if update.submissions.all %}
+                            <h4>Submitted Files:</h4>
+                            <div class="files">
+                                {% for submission in update.submissions.all %}
+                                    {% if submission.file.url|lower|slice:'-3:' in 'png,jpg,jpeg,gif' %}
+                                        <div class="file-preview">
+                                            <img src="{{ submission.file.url }}" alt="Image">
+                                        </div>
+                                    {% else %}
+                                        <a href="{{ submission.file.url }}" target="_blank">{{ submission.file.name }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>No files submitted.</p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-submissions">No submissions today.</p>
+        {% endif %}
+    </div>
+
+</div>
+<script>
+
+    // 🔔 Open/Close Notification Popup
+    function openNotificationPopup() {
+        document.getElementById("notification-popup").style.display = "flex";
+    }
+    
+    function closeNotificationPopup() {
+        document.getElementById("notification-popup").style.display = "none";
+    }
+    
+    // 🔔 Send Notification
+    function sendNotification() {
+        const internId = document.getElementById("notify-intern").value;
+        const message = document.getElementById("notify-message").value;
+        const statusElement = document.getElementById("notification-status");
+    
+        if (!internId || !message) {
+            statusElement.innerText = "Please fill all fields!";
+            statusElement.style.color = "red";
+            return;
+        }
+    
+        fetch("{% url 'send_notification' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({ intern_id: internId, message: message }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                statusElement.innerText = data.success;
+                statusElement.style.color = "green";
+                document.getElementById("notify-message").value = "";
+            } else {
+                statusElement.innerText = data.error;
+                statusElement.style.color = "red";
+            }
+        })
+        .catch(error => {
+            statusElement.innerText = "Error sending notification!";
+            statusElement.style.color = "red";
+        });
+    }
+    
+
+    
+    // 📢 Open/Close Announcement Form
+    document.getElementById("open-announcement-form-btn").addEventListener("click", function() {
+        document.getElementById("announcement-popup").style.display = "block";
+    });
+    
+    document.getElementById("close-announcement-form-btn").addEventListener("click", function() {
+        document.getElementById("announcement-popup").style.display = "none";
+    });
+    
+    // 📢 Submit Announcement
+    document.getElementById("announcement-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+    
+        const formData = new FormData(this);
+    
+        fetch("{% url 'add_announcement' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("announcement-response-message").innerText = data.success || data.error;
+            if (data.success) {
+                this.reset();
+                setTimeout(() => {
+                    document.getElementById("announcement-popup").style.display = "none";
+                }, 1000);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+    
+
+    
+    // 📅 Add Meeting
+    document.getElementById("meeting-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+    
+        const title = document.getElementById("meeting-title").value.trim();
+        const description = document.getElementById("meeting-description").value.trim();
+        const date = document.getElementById("meeting-date").value;
+        const location = document.getElementById("meeting-location").value.trim();
+    
+        if (!title || !date) {
+            alert("Meeting title and date/time are required!");
+            return;
+        }
+    
+        fetch("{% url 'add_meeting' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({
+                title: title,
+                description: description,
+                date: date,
+                location: location,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Meeting added successfully!");
+                this.reset();
+                location.reload();
+            } else {
+                alert("Error: " + data.error);
+            }
+        })
+        .catch(error => {
+            alert("An error occurred while adding the meeting.");
+        });
+    });
+    
+
+    
+    // 📝 Add/Edit Practice Session
+    function submitSession() {
+        const session_id = document.getElementById("session_id").value;
+        const title = document.getElementById("session-title").value;
+        const description = document.getElementById("session-description").value;
+        const date = document.getElementById("session-date").value;
+        const location = document.getElementById("session-location").value;
+        const meeting_link = document.getElementById("session-link").value;
+    
+        const url = session_id 
+            ? `/elementishead/edit-session/${session_id}/`
+            : `/elementishead/add-practice-session/`;
+    
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&date=${encodeURIComponent(date)}&location=${encodeURIComponent(location)}&meeting_link=${encodeURIComponent(meeting_link)}`,
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("session-response-message").innerText = data.success || data.error;
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+    </script>
+{% endblock %}
+{% comment %} <script src="{% static 'js/intern_dashboard.js' %}"></script> {% endcomment %}
+
+{% include 'footer.html' %}
+
+    

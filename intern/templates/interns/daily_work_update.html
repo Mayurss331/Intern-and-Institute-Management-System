@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/intern/daily_progress.css' %}">
+
+</head>
+<body>
+    {% include 'intern_header.html' %}
+    {% block content %}
+    <div class="container">
+    <h2>Daily Work Updates</h2>
+    <a href="{% url 'submit_work_update' %}" class="btn">Submit Today's Task</a>
+    
+    <ul>
+        {% for update in work_updates %}
+            <li>
+                <strong>{{ update.date }} - {{ update.task_title }}</strong>  
+                <p>{{ update.task_description }}</p>
+                <p>Status: <strong>{{ update.get_task_status_display }}</strong></p>
+
+                {% if update.submissions.all %}
+                    <p>Work Submissions:</p>
+                    <ul>
+                        {% for submission in update.submissions.all %}
+                            <li><a href="{{ submission.file.url }}" download>{{ submission.file.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <details>
+                    <summary>View Details</summary>
+                    <p><strong>Report:</strong> {{ update.report }}</p>
+                    <p><strong>Learnings:</strong> {{ update.learnings }}</p>
+                    <p><strong>Challenges:</strong> {{ update.challenges }}</p>
+                    <p><strong>Suggestions:</strong> {{ update.suggestions }}</p>
+                </details>
+
+                {% if update.is_reviewed %}
+                    <p><strong>Feedback:</strong> {{ update.feedback }}</p>
+                {% endif %}
+            </li>
+        {% empty %}
+            <p>No work updates submitted yet.</p>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

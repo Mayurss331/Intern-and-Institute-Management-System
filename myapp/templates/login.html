@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    
+    <div class="wrapper">
+    <form method="POST">
+        {% csrf_token %}
+      <h2>Admin Login </h2>
+      {% if messages %}
+            <div class="error-message">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+      <div class="input-field">
+        <input type="text" name="username"  required>
+        <label>Enter your username</label>
+      </div>
+      <div class="input-field">
+        <input type="password" name="password"  required>
+        <label>Enter your password</label>
+      </div>
+      <div class="forget">
+        <label for="remember">
+          <input type="checkbox" id="remember">
+          <p>Remember me</p>
+        </label>
+        <a href="{% url "intern_login" %}" target="_blank">Intern Login</a>
+      </div>
+      <button type="submit">Log In</button>
+      
+    </form>
+  </div>
+</body>
+</html>

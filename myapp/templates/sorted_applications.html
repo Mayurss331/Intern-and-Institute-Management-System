@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Sorted Applications</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <!-- Bootstrap CSS -->
+    <style>
+        .modal{
+            display:None;
+        }
+    </style>
+</head>
+<body>
+    {% include 'header.html' %}
+    <a class="back-button" href="{% url 'home' %}"></a>
+
+
+    <div class="container">
+        <h2>Sort Applications by Month</h2>
+
+        <!-- Month Filter Form -->
+        <form method="GET" class="filter-form">
+            <label for="year">Select Year:</label>
+            <select name="year">
+                {% for year in years %}
+                    <option value="{{ year }}" {% if request.GET.year == year|stringformat:"s" %}selected{% endif %}>
+                        {{ year }}
+                    </option>
+                {% endfor %}
+            </select>
+        
+            <label for="month">Select Month:</label>
+            <select name="month">
+                {% for month in months %}
+                    <option value="{{ month.month }}" {% if request.GET.month == month.month|stringformat:"s" %}selected{% endif %}>
+                        {{ month.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        
+            <button type="submit" class="filter-btn">Filter</button>
+            <button id="downloadCSV" class="btn btn-success mb-3 filter-btn">Download CSV</button>
+        </form>
+        
+
+        {% if applications %}
+        <div class="table-container">
+            <table id="applicationsTable">
+                <tr>
+                    <th>Sr.No.</th>
+                    <th>Timestamp</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                    <th>College</th>
+                    <th>Performance</th>
+                    <th>Actions</th>
+                </tr>
+                {% for app in applications %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ app.timestamp }}</td>
+                    <td>{{ app.first_name }}</td>
+                    <td>{{ app.last_name }}</td>
+                    <td>{{ app.email }}</td>
+                    <td>{{ app.role }}</td>
+                    <td>{{ app.phone_number }}</td>
+                    <td>{{ app.college_name }}</td>
+                    <td>
+                        <button onclick="window.location.href='{% url 'update_single_performance' %}?id={{ app.id }}'" class="edit-btn">
+                            Edit Performance
+                        </button>
+                    </td>
+                    <td>
+                        <button class="view-btn" onclick="openModal({{ app.id }})">View Full Info</button>
+                    </td>
+                </tr>
+                <!-- Hidden Full Info Modal -->
+                <div id="modal-{{ app.id }}" class="modal" onclick="closeModal({{ app.id }})">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal({{ app.id }})">&times;</span>
+                        <h2>Candidate Details</h2>
+                        <p><strong>Timestamp:</strong> {{ app.timestamp }}</p>
+                        <p><strong>Role:</strong> {{ app.role }}</p>
+                        <p><strong>First Name:</strong> {{ app.first_name }}</p>
+                        <p><strong>Last Name:</strong> {{ app.last_name }}</p>
+                        <p><strong>Email:</strong> {{ app.email }}</p>
+                        <p><strong>Phone Number:</strong> {{ app.phone_number }}</p>
+                        <p><strong>Resume:</strong> <a href="{{ app.resume }}" target="_blank">View Resume</a></p>
+                        <p><strong>Source:</strong> {{ app.source }}</p>
+                        <p><strong>Gender:</strong> {{ app.gender }}</p>
+                        <p><strong>Date of Birth:</strong> {{ app.date_of_birth }}</p>
+                        <p><strong>Domicile State:</strong> {{ app.domicile_state }}</p>
+                        <p><strong>Current Location:</strong> {{ app.current_location }}</p>
+                        <p><strong>Citizenship:</strong> {{ app.citizenship }}</p>
+                        <p><strong>Postgraduate Degree:</strong> {{ app.postgraduate_degree }}</p>
+                        <p><strong>Postgraduate Stream:</strong> {{ app.postgraduate_stream }}</p>
+                        <p><strong>Postgraduate Passing Year:</strong> {{ app.postgraduate_passing_year }}</p>
+                        <p><strong>Undergraduate Degree:</strong> {{ app.undergraduate_degree }}</p>
+                        <p><strong>Undergraduate Stream:</strong> {{ app.undergraduate_stream }}</p>
+                        <p><strong>Undergraduate Passing Year:</strong> {{ app.undergraduate_passing_year }}</p>
+                        <p><strong>College Name:</strong> {{ app.college_name }}</p>
+                        <p><strong>Score Above 60%:</strong> {{ app.score_above_60|yesno:"YES,NO" }}</p>
+                        <p><strong>Standing Arrears:</strong> {{ app.standing_arrears|yesno:"YES,NO" }}</p>
+                        <p><strong>Coding Languages:</strong> {{ app.coding_languages }}</p>
+                        <p><strong>Currently Working:</strong> {{ app.currently_working|yesno:"YES,NO" }}</p>
+                        <p><strong>Company Name:</strong> {{ app.company_name }}</p>
+                        <p><strong>CTC/Stipend:</strong> {{ app.ctc_or_stipend }}</p>
+                        <p><strong>Designation:</strong> {{ app.designation }}</p>
+                        <p><strong>Open to Relocate:</strong> {{ app.open_to_relocate|yesno:"YES,NO" }}</p>
+                        <p><strong>Passport Photo:</strong> <a href="{{ app.passport_photo }}" target="_blank">View Photo</a></p>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </table>
+        </div>
+        {% else %}
+            <p class="no-results">No results found for the selected month.</p>
+        {% endif %}
+    </div>
+
+    
+    <!-- JavaScript for Modal Popup -->
+    <script>
+        function openModal(id) {
+            document.getElementById("modal-" + id).style.display = "flex";
+        }
+    
+        function closeModal(id) {
+            document.getElementById("modal-" + id).style.display = "none";
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ensure all modals are hidden on page load
+            let modals = document.querySelectorAll(".modal");
+            modals.forEach((modal) => {
+                modal.style.display = "none";
+            });
+    
+            // Function to open modal
+            window.openModal = function (id) {
+                document.getElementById("modal-" + id).style.display = "flex";
+            };
+    
+            // Function to close modal
+            window.closeModal = function (id) {
+                document.getElementById("modal-" + id).style.display = "none";
+            };
+        });
+    </script>
+    <script>
+        document.getElementById("downloadCSV").addEventListener("click", function (event) {
+            event.preventDefault();  // Prevent form from reloading
+        
+            let year = document.querySelector("select[name='year']").value;
+            let month = document.querySelector("select[name='month']").value;
+        
+            if (!year || !month) {
+                alert("Please select both Year and Month.");
+                return;
+            }
+        
+            let url = "{% url 'download_csv' %}?year=" + encodeURIComponent(year) + "&month=" + encodeURIComponent(month);
+        
+            // Open URL in a new tab for downloading
+            window.open(url, "_blank");
+        });
+        </script>
+        
+    
+        {% include 'footer.html' %}
+
+</body>
+</html>

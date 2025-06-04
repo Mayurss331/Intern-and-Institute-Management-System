@@ -1,0 +1,47 @@
+
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Login</title>
+    <link rel="stylesheet" href="{% static "css/intern/login.css" %}">
+</head>
+
+<body>
+    <div class="wrapper">
+        <h2>Intern Login</h2>
+        <form method="post" class="form-login">
+            {% csrf_token %}
+            <div class="input-field">
+                <input type="text" name="username" required>
+                <label>Enter your email</label>
+            </div>
+            <div class="input-field">
+                <input type="password" name="password" required>
+                <label>Enter your password</label>
+            </div>
+            <div class="forget">
+                <label for="remember">
+                    <input type="checkbox" id="remember">
+                    <p>Remember me</p>
+                </label>
+                <a href="#" id="forgetpassword">Forgot password?</a>
+            </div>
+            <button type="submit">Log In</button>
+
+        </form>
+        {% comment %} <p>Don't have an account? <a href="{% url 'intern_signup' %}">Signup here</a></p> {% endcomment %}
+
+
+    </div>
+    <script>
+        document.getElementById("forgetpassword").addEventListener("click", ()=>{
+
+            alert("Please Contact Administration on : support@elementissofttech.com");
+        });
+    </script>
+</body>
+
+</html>

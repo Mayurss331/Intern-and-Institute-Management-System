@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Dashboard</title>
+    <link rel="stylesheet" href="{% static "css/intern/dashboard.css" %}">
+
+</head>
+<body>
+    {% include 'intern_header.html' %}
+    <div class="dashboard-container">
+        
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="greeting-container">
+                <h2 id="greeting"></h2>
+                <p id="current-date"></p>
+            </div>
+            <nav class="quick-links">
+                <ul>
+                    <li><a href="{% url 'submit_work_update' %}">📝 Submit Work Update</a></li>
+                    <li><a href="{% url 'profile' %}">👤 Edit Profile</a></li>
+                    <li><a href="#">📜 Internship Guidelines</a></li>
+                    <li><a href="mailto:hr@elementissofttech.com" target="_blank">📩 Contact HR</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            
+            <!-- Work Updates & Meetings (Left & Right) -->
+            <section class="dashboard-row">
+                <div class="dashboard-section">
+                    <h3>📌 Daily Work Updates</h3>
+                    <p>Keep track of your assigned tasks and progress.</p>
+                    <a href="{% url 'daily_work_update' %}" class="btn">View Work Updates</a>
+                    <a href="{% url 'submit_work_update' %}" class="btn">Submit Today's Task</a>
+                </div>
+
+                <div class="dashboard-section">
+                    <h3>📅 Upcoming Meetings</h3>
+                    {% if upcoming_meetings %}
+                        <ul class="meeting-list">
+                            {% for meeting in upcoming_meetings %}
+                                <li class="meeting-card">
+                                    <strong>{{ meeting.title }}</strong><br>
+                                    <p> {{ meeting.description }}</p>
+                                    <p>🕒 {{ meeting.date|date:"l, F j, g:i A" }}</p>
+                                    <p>📍 {{ meeting.location }}</p>
+                                    <p><b>Meeting in</b> <span id="countdown-{{ meeting.id }}" class="status"></span></p>
+                                    <div id="button-container-{{ meeting.id }}"></div>
+                                </li>
+
+                                <script>
+                                    function countdown{{ meeting.id }}() {
+                                        const meetingTime = new Date("{{ meeting.date|date:'Y-m-d H:i:s' }}").getTime();
+                                        const buttonContainer = document.getElementById("button-container-{{ meeting.id }}");
+                                        const statusText = document.getElementById("countdown-{{ meeting.id }}");
+                                
+                                        const timer = setInterval(() => {
+                                            let now = new Date().getTime();
+                                            let timeLeft = meetingTime - now;
+                                
+                                            if (timeLeft <= 0) {
+                                                clearInterval(timer);
+                                                statusText.innerHTML = "🔴 Started!";
+                                                
+                                                // Show JOIN NOW button
+                                                buttonContainer.innerHTML = `
+                                                    <a href="{{ meeting.location }}" target="_blank" class="join-btn">JOIN NOW</a>
+                                                `;
+                                                return;
+                                            }
+                                
+                                            // Update countdown
+                                            let hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+                                            let minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
+                                            let seconds = Math.floor((timeLeft / 1000) % 60);
+                                            statusText.innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+                                
+                                            // Show "Meeting yet to start" until it starts
+                                            buttonContainer.innerHTML = `
+                                                <span class="waiting-text">⏳ Meeting Yet to Start</span>
+                                            `;
+                                        }, 1000);
+                                    }
+                                    countdown{{ meeting.id }}();
+                                </script>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No upcoming meetings.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Announcements & Learning Resources -->
+            <section class="dashboard-row">
+                <div class="dashboard-section">
+                    <h3>📢 Announcements</h3>
+    
+                    {% if announcements %}
+                        <ul>
+                            {% for announcement in announcements %}
+                                <li class="announcement-card {% if announcement.is_important %}important{% endif %}">
+                                    <strong>{{ announcement.title }}</strong> - {{ announcement.date|date:"M d, Y" }}
+                                    <p>{{ announcement.message }}</p>
+                                    
+                                    {% if announcement.link %}
+                                        <a href="{{ announcement.link }}" target="_blank" class="btn">🔗 More Details</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No new announcements.</p>
+                    {% endif %}
+                </div>
+
+                <div class="dashboard-section">
+                    <h3>📖 Learning Resources</h3>
+                    <ul>
+                        <li><a href="https://www.udemy.com/course/python-basics/" target="_blank">Python for Beginners</a></li>
+                        <li><a href="https://developer.mozilla.org/en-US/" target="_blank">MDN Web Docs</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Calendar Section (Full Width) -->
+            <section class="dashboard-section">
+                <h3>📅 My Calendar</h3>
+                <iframe src="https://calendar.google.com/calendar/embed?src=teams.elementis%40gmail.com&mode=MONTH&showTitle=0&showNav=1&showDate=1&showTabs=0&showCalendars=0&showPrint=0"style="border: 0; width: 100%; height: 600px;"frameborder="0"scrolling="no"></iframe>
+            </section>
+        
+        </main>
+
+    </div>
+
+<script>
+    function getGreeting() {
+        const now = new Date();
+        const hours = now.getHours();
+        let greeting = "Good Morning";
+
+        if (hours >= 12 && hours < 17) {
+            greeting = "Good Afternoon";
+        } else if (hours >= 17) {
+            greeting = "Good Evening";
+        }
+
+        return greeting;
+    }
+
+    function formatDate() {
+        const now = new Date();
+        const options = { weekday: 'long', day: '2-digit', month: 'short' };
+        return now.toLocaleDateString('en-US', options);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const userName = "{{ user.first_name }} {{ user.last_name }}"; // Fetch user's name from Django template
+        document.getElementById("greeting").innerText = `${getGreeting()}, ${userName}!`;
+        document.getElementById("current-date").innerText = formatDate();
+    });
+    {% comment %} document.querySelector('iframe').onload = function() {
+        let iframeDoc = document.querySelector('iframe').contentWindow.document;
+        let eventCells = iframeDoc.querySelectorAll('.KF4T6b'); 
+        eventCells.forEach(cell => {
+            cell.style.backgroundColor = "red"; // Change event background
+        });
+    }; {% endcomment %}
+</script>
+   
+
+</body>
+</html>

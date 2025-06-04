@@ -1,0 +1,27 @@
+.content{
+    width: 60%;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 10px 10px 15px red;
+    justify-self: center;
+    margin: 50px auto ;
+}
+form{
+    padding: 20px;
+    font-size: larger;
+    font-weight: bold;
+}
+input,select,button{
+    margin: 20px;
+    font-size: larger;
+    max-width: 60%;
+}
+h1{
+    margin: 20px;
+}
+button{
+    padding: 7px 10px;
+    background-color: #3c59cf;
+    color: white;
+    font-weight: bold;
+}

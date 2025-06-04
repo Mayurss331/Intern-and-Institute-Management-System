@@ -1,0 +1,59 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/intern/style.css' %}">
+<header class="dashboard-header">
+    <a href="{% url 'intern_dashboard' %}" style="color: white;text-decoration: none;"><div class="logo">
+        <img src="https://www.elementissofttech.com/images/Elementis-01.png" alt="Company Logo">
+        <h2>Intern Dashboard</h2>
+    </div></a>
+    
+    <button class="menu-toggle" id="menu-toggle">&#9776;</button>
+    
+    <nav>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="{% url 'intern_dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'intern_practice' %}">Practice & Learning</a></li>
+            <li>
+                <a href="{% url 'notifications' %}"><i class="fa-regular fa-bell"></i>Notifications 
+                    <span class="notif-count">{{ notification }}</span>
+                </a>
+            </li>
+            <li class="profile-menu">
+                <div class="profile-pic" id="profile-pic">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic" id="profile-pic">
+                    {% else %}
+                        <img src="/media/default-profile.png" alt="Default Profile" class="profile-pic" id="profile-pic">
+                    {% endif %}
+                    <ul class="dropdown-menu" id="dropdown-menu">
+                        <a href="{% url 'profile' %}"><li>Profile</li></a>
+                        <a href="{% url 'intern_logout' %}"><li>Logout</li></a>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</header>
+{% comment %} For the toggle button  {% endcomment %}
+<script>
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+        document.getElementById('nav-links').classList.toggle('active');
+    });
+</script>
+{% comment %} For the profile dropdown menu {% endcomment %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const profilePic = document.getElementById("profile-pic");
+        const dropdownMenu = document.getElementById("dropdown-menu");
+
+        profilePic.addEventListener("click", function (event) {
+            event.stopPropagation(); // Prevents closing immediately
+            dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!profilePic.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.style.display = "none"; // Close when clicking outside
+            }
+        });
+    });
+</script>

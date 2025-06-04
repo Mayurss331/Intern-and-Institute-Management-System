@@ -1,0 +1,110 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/intern_manage_schedule.css' %}">
+
+{% include 'header.html' %}
+
+
+<div class="container">
+
+    <h1>Internship Management Dashboard</h1>
+
+    <!-- Section 1: Announcements -->
+    <section class="management-section">
+        <h2>📢 Announcements</h2>
+
+
+        <div id="announcement-list">
+            {% for announce in announcements %}
+            <div class="item-card long-card">
+                <h4>{{ announce.title }} <small>({{ announce.category }})</small></h4>
+                <p>{{ announce.message }}</p>
+                {% if announce.link %}
+                <a href="{{ announce.link }}" target="_blank">🔗 Link</a>
+                {% endif %}
+                <button  class="btn-delete" onclick="deleteAnnouncement('{{ announce.id }}')">🗑️ Delete</button>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+        <!-- Section 2: Practice Sessions -->
+        <section class="management-section">
+            <h2>📝 Practice Sessions</h2>
+
+    
+            <div id="session-list"class="fl-mw">
+                {% for session in sessions %}
+                <div class="item-card">
+                    <h4>{{ session.title }}</h4>
+                    <p>{{ session.description }}</p>
+                    <p>📅 {{ session.date }}</p>
+                    <p>📍 {{ session.location }}</p>
+                    {% if session.meeting_link %}
+                    <a href="{{ session.meeting_link }}" target="_blank">🔗 Meeting Link</a>
+                    {% endif %}
+                    <button class="btn-delete" onclick="deletePracticeSession('{{ session.id }}')">🗑️ Delete</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    <!-- Meetings -->
+    <section class="section management-section">
+        <h2>📅 Meetings</h2>
+        {% if meetings %}
+            <ul class="fl-mw">
+            {% for meet in meetings %}
+                <li class="card item-card" id="meeting-{{ meet.id }}">
+                    <h3>{{ meet.title }}</h3>
+                    <p>{{ meet.description }}</p>
+                    <p>📅 {{ meet.date|date:"d M Y H:i" }}</p>
+                    <p>📍 {{ meet.location }}</p>
+
+                    <div class="action-buttons">
+                        <button class="btn-edit" onclick="openEditMeetingModal({{ meet.id }}, '{{ meet.title }}', '{{ meet.description }}', '{{ meet.date|date:'Y-m-d\TH:i' }}', '{{ meet.location }}')">✏️ Edit</button>
+                        <button class="btn-delete" onclick="deleteMeeting({{ meet.id }})">🗑️ Delete</button>
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No meetings scheduled yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- 🛠 Hidden Edit Popup Modal -->
+    <div id="editMeetingModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeEditMeetingModal()">&times;</span>
+            <h2>Edit Meeting</h2>
+            <form id="editMeetingForm">
+                {% csrf_token %}
+                <input type="hidden" id="editMeetingId">
+
+                <label>Title:</label>
+                <input type="text" id="editMeetingTitle" required>
+
+                <label>Description:</label>
+                <textarea id="editMeetingDescription"></textarea>
+
+                <label>Date & Time:</label>
+                <input type="datetime-local" id="editMeetingDate" required>
+
+                <label>Location:</label>
+                <input type="text" id="editMeetingLocation">
+
+                <button type="submit" class="btn-update">Update Meeting</button>
+            </form>
+        </div>
+    </div>
+
+
+    </div>
+
+{% include 'footer.html' %}
+
+<script src="{% static 'js/manage_intern.js' %}"></script>
+
+</body>
+</html>

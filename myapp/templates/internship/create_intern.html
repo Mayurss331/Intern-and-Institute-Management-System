@@ -1,0 +1,20 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/create_intern.css' %}">
+{% include 'header.html' %}
+
+<div class="content">
+{% block content %}
+  <h1>Create Intern from Application</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="default">Create Intern</button>
+  </form>
+{% endblock %}
+</div>
+
+
+{% include 'footer.html' %}
+
+    

@@ -1,0 +1,263 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: #f2f2f2;
+}
+
+/* Work Update Container */
+.container {
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 50px auto;
+    width: 60vw;
+}
+
+/* Headings */
+.container h2, h3 {
+    color: #0056b3;
+    text-align: center;
+}
+
+/* Task Details */
+.container p {
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 10px;
+}
+
+/* File List */
+.container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.container ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    flex-wrap: wrap;
+}
+
+/* File Links */
+.container ul li a {
+    text-decoration: none;
+    color: #0056b3;
+    font-weight: bold;
+}
+
+/* Buttons */
+.container button {
+    background: #355cdc;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.container button:hover {
+    background: #2336c8;
+}
+
+/* Edit Button */
+.container button.edit {
+    background: #0037ff;
+}
+
+.container button.edit:hover {
+    background: #0056b3;
+}
+
+/* Form Styling */
+.container form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form Labels */
+.container form label {
+    font-weight: bold;
+    margin: 10px 0 5px;
+}
+
+/* Inputs and Textarea */
+.container form input,
+.container form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* File Upload */
+.container input[type="file"] {
+    border: none;
+    padding: 5px;
+    background: #f8f8f8;
+    border-radius: 5px;
+}
+
+/* Submit Button */
+.container form button {
+    background: #28a745;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.container form button:hover {
+    background: #218838;
+}
+
+/* Edit Form (Initially Hidden) */
+#editForm {
+    display: none;
+    margin-top: 20px;
+    max-width: 80vw;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ddd;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80vw;
+}
+
+/* Form Title */
+#editForm h2 {
+    text-align: center;
+    color: #333;
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+/* Input Fields & Textarea */
+#editForm input[type="text"],
+#editForm textarea,
+#editForm select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Labels */
+#editForm label {
+    font-weight: bold;
+    color: #555;
+    display: block;
+    margin-top: 10px;
+}
+
+/* File Upload */
+#editForm input[type="file"] {
+    display: block;
+    margin-top: 10px;
+}
+
+/* Submit Button */
+#editForm button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+#editForm button:hover {
+    background-color: #0056b3;
+}
+
+/* 🔹 RESPONSIVE DESIGN 🔹 */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .container ul li {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .container button {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px;
+        margin-top: 5px;
+    }
+
+    #editForm {
+        width: 90%;
+    }
+
+    #editForm input, #editForm textarea, #editForm select {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .container h2, h3 {
+        font-size: 18px;
+    }
+
+    .container p {
+        font-size: 14px;
+    }
+
+    .container form button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    #editForm {
+        width: 95%;
+        padding: 15px;
+    }
+
+    #editForm h2 {
+        font-size: 18px;
+    }
+
+    #editForm input, #editForm textarea, #editForm select {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
